@@ -66,7 +66,8 @@ print(f"Run Command:     {rec.primary_command}")
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Claude Code** | `claude` | `claude-haiku-5.5` | `claude-sonnet-5.5` | `claude-opus-5.5` | `claude-3-5-sonnet`, `claude-opus-4.5` |
 | **Antigravity** | `agy` | `gemini-3.8-flash` | `gemini-3.8-pro` | `argon-4` / `opus-5.5` | `gemini-1.5-pro`, `gemini-2.0-flash` |
-| **OpenAI Codex** | `codex` | `o3-mini` | `gpt-5` | `o1` / `codex-next` | `gpt-4o`, `o1-preview` |
+| **OpenAI Codex** | `codex` | `gpt-6-luna` | `gpt-6.1-sol` | `gpt-6-astra` | `o3-mini`, `gpt-4o`, `o1` |
+
 | **Grok Code** | `grok` | `grok-3-mini` | `grok-3` | `grok-4` | `grok-2` |
 | **Oh My Pi (OMP)** | `omp` | `qwen-2.5-coder-32b` | `deepseek-v3` | `deepseek-r1` | `claude-3-5-sonnet` |
 | **Pi** | `pi` | `qwen-2.5-coder-7b` | `deepseek-v3` | `deepseek-r1` | `claude-3-5-haiku` |

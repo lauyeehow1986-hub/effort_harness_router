@@ -85,7 +85,8 @@ The OpenJev router uses calibrated non-autoregressive decision heads:
 | :--- | :--- | :--- |
 | **Antigravity** (`agy`) | Multi-agent workspaces, subagent delegation, interactive UI artifacts, Gemini 2M+ context. | Greenfield projects, complex multi-step planning, visual/interactive tasks, large repo exploration. |
 | **Claude Code** (`claude`) | Fast terminal-native bash execution, rapid directory inspection, deep git branch awareness. | Terminal-centric work, rapid CLI debugging, quick iterative bash loops. |
-| **Codex** (`codex`) | OpenAI test-time compute reasoning (o1/o3-mini), direct IDE integration, cloud sandboxes. | Algorithmic logic, formal math problems, competitive programming style challenges. |
+| **Codex** (`codex`) | OpenAI GPT-6 reasoning and agentic architecture (Astra/Sol/Luna), direct IDE integration, cloud sandboxes. | Algorithmic logic, formal math problems, competitive programming, deep computer use. |
+
 | **Oh My Pi** (`omp`) | 31+ Rust-backed IDE tools, native LSP client, DAP debugger, Hashline edits, multi-role models. | Language server diagnostics, deep breakpoint debugging, high-accuracy edits without text drift. |
 | **Pi** (`pi`) | Minimalist zero-bloat harness with 4 core tools (`read`, `write`, `edit`, `bash`). | Lightweight terminal scripting, local open-weight models (Qwen, DeepSeek). |
 | **Grok Code** (`grok`) | Real-time web/social synthesis, fast xAI reasoning models. | Tasks requiring up-to-the-minute web information or fast reasoning. |
@@ -100,13 +101,14 @@ The OpenJev router uses calibrated non-autoregressive decision heads:
 ### Frontier / Next-Gen Profile (`--profile frontier`)
 - **Claude Code**: `claude-haiku-5.5` (Fast) $\to$ `claude-sonnet-5.5` (Balanced) $\to$ `claude-opus-5.5` (Frontier)
 - **Antigravity**: `gemini-3.8-flash` (Fast) $\to$ `gemini-3.8-pro` (Balanced) $\to$ `argon-4` / `opus-5.5` (Frontier)
-- **Codex**: `o3-mini` (Fast) $\to$ `gpt-5` (Balanced) $\to$ `o1` / `codex-next` (Frontier)
+- **Codex**: `gpt-6-luna` (Fast) $\to$ `gpt-6.1-sol` (Balanced) $\to$ `gpt-6-astra` (Frontier)
 - **Grok**: `grok-3-mini` (Fast) $\to$ `grok-3` (Balanced) $\to$ `grok-4` (Frontier)
 - **Oh My Pi**: `qwen-2.5-coder-32b` (Fast) $\to$ `deepseek-v3` (Balanced) $\to$ `deepseek-r1` (Frontier)
 
 ### Legacy / V4 Profile (`--profile legacy`)
 - **Claude Code**: `claude-3-5-haiku` $\to$ `claude-3-5-sonnet` $\to$ `claude-opus-4.5`
 - **Antigravity**: `gemini-1.5-flash` $\to$ `gemini-1.5-pro` $\to$ `gemini-2.0-flash`
-- **Codex**: `gpt-4o-mini` $\to$ `gpt-4o` $\to$ `o1-preview`
+- **Codex**: `o3-mini` $\to$ `gpt-4o` $\to$ `o1` (with `gpt-4.5-preview` / `gpt-4o-mini`)
 - **Grok**: `grok-2-mini` $\to$ `grok-2`
 - **Oh My Pi**: `deepseek-coder-v2` $\to$ `claude-3-5-sonnet`
+

@@ -163,7 +163,7 @@ class TestHarnessRouterAndCatalog(unittest.TestCase):
         # In high/max effort frontier tier:
         self.assertEqual(matrix["claude_code"]["model"], "claude-opus-5.5")
         self.assertIn(matrix["antigravity"]["model"], ["argon-4", "opus-5.5"])
-        self.assertIn(matrix["codex"]["model"], ["o1", "codex-next"])
+        self.assertEqual(matrix["codex"]["model"], "gpt-6-astra")
         self.assertEqual(matrix["grok"]["model"], "grok-4")
         self.assertIn("deepseek-r1", matrix["oh_my_pi"]["model"])
 
@@ -176,7 +176,8 @@ class TestHarnessRouterAndCatalog(unittest.TestCase):
         matrix = rec.harness_matrix
         self.assertEqual(matrix["claude_code"]["model"], "claude-3-5-haiku")
         self.assertIn("gemini-1.5-flash", matrix["antigravity"]["model"])
-        self.assertIn("gpt-4o-mini", matrix["codex"]["model"])
+        self.assertEqual(matrix["codex"]["model"], "o3-mini")
+
 
     def test_cli_command_generation(self):
         rec = self.router.route("implement user authentication with jwt and bcrypt in express")

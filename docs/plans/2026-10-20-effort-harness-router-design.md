@@ -78,7 +78,8 @@ The router supports both **Frontier/Next-Gen** and **Legacy/V4** model profiles 
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Claude Code** | `claude` | `claude-haiku-5.5` | `claude-sonnet-5.5` | `claude-opus-5.5` | `claude-3-5-sonnet`, `claude-opus-4.5` |
 | **Antigravity** | `agy` | `gemini-3.8-flash` | `gemini-3.8-pro` | `argon-4` / `opus-5.5` | `gemini-1.5-pro`, `gemini-2.0-flash` |
-| **OpenAI Codex** | `codex` | `o3-mini` / `gpt-5-mini` | `gpt-5` / `gpt-4.5` | `o1` / `codex-next` | `gpt-4o`, `o1-preview`, `o1-mini` |
+| **OpenAI Codex** | `codex` | `gpt-6-luna` | `gpt-6.1-sol` | `gpt-6-astra` | `o3-mini`, `gpt-4o`, `o1` |
+
 | **Grok Code** | `grok` | `grok-3-mini` | `grok-3` | `grok-4` / `grok-reasoning` | `grok-2`, `grok-2-mini` |
 | **Oh My Pi (OMP)** | `omp` | `qwen-2.5-coder-32b` | `deepseek-v3` / `sonnet-5.5` | `deepseek-r1` / `opus-5.5` | `claude-3-5-sonnet`, `deepseek-coder-v2` |
 | **Pi** | `pi` | `qwen-2.5-coder-7b` | `deepseek-v3` | `deepseek-r1` | `claude-3-5-haiku` |

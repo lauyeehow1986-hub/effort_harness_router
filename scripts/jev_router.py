@@ -149,8 +149,11 @@ class OpenJevDiscriminator:
             r"\bpi\b", r"\bmario zechner\b", r"\bminimal agent\b", r"\b4 tools\b"
         ],
         "codex": [
-            r"\bcodex\b", r"\bopenai\b", r"\bgpt-5\b", r"\bo3-mini\b", r"\bo1\b"
+            r"\bcodex\b", r"\bopenai\b", r"\bgpt-6\b", r"\bastra\b", r"\bsol\b", r"\bluna\b",
+            r"\bgpt-6-astra\b", r"\bgpt-6-sol\b", r"\bgpt-6-luna\b", r"\bgpt-6.1-sol\b",
+            r"\bo3-mini\b", r"\bo1\b", r"\bgpt-4o\b"
         ],
+
         "grok": [
             r"\bgrok\b", r"\bxai\b", r"\breal-time\b", r"\bgrok code\b", r"\bgrok 3\b"
         ],
@@ -359,11 +362,12 @@ class ModelCatalog:
                 "cmd_template": "agy --model {model} --effort {effort}"
             },
             "codex": {
-                "fast": "o3-mini",
-                "balanced": "gpt-5",
-                "frontier": "o1",
-                "cmd_template": "codex --model {model} --effort {effort}"
+                "fast": "gpt-6-luna",
+                "balanced": "gpt-6.1-sol",
+                "frontier": "gpt-6-astra",
+                "cmd_template": "codex --model {model} --reasoning-effort {effort}"
             },
+
             "grok": {
                 "fast": "grok-3-mini",
                 "balanced": "grok-3",
@@ -421,11 +425,12 @@ class ModelCatalog:
                 "cmd_template": "agy --model {model}"
             },
             "codex": {
-                "fast": "gpt-4o-mini",
+                "fast": "o3-mini",
                 "balanced": "gpt-4o",
-                "frontier": "o1-preview",
-                "cmd_template": "codex --model {model}"
+                "frontier": "o1",
+                "cmd_template": "codex --model {model} --reasoning-effort {effort}"
             },
+
             "grok": {
                 "fast": "grok-2-mini",
                 "balanced": "grok-2",
