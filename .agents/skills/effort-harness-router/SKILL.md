@@ -101,11 +101,12 @@ The OpenJev router uses calibrated non-autoregressive decision heads:
 ### Frontier / Next-Gen Profile (`--profile frontier`)
 - **Claude Code**: `claude-haiku-5.5` (Fast) $\to$ `claude-sonnet-5.5` (Balanced) $\to$ `claude-opus-5.5` (Frontier)
 - **Antigravity**: `gemini-3.8-flash` (Fast) $\to$ `gemini-3.8-flash` (Balanced/High) $\to$ `gemini-4-argon` / `opus-5.5` (Frontier)
-- **Codex**: `gpt-5.4-mini` (Fast) $\to$ `gpt-5.3-codex` (Balanced) $\to$ `gpt-5.5` (Frontier, `--effort xhigh`)
-- **Grok**: `grok-4-fast` (Fast) $\to$ `grok-4` (Balanced) $\to$ `grok-4-heavy` (Frontier)
-- **Oh My Pi**: `qwen3-coder-next` (Fast) $\to$ `deepseek-v4` (Balanced) $\to$ `deepseek-r1` / `deepseek-v4-pro` (Frontier)
-- **Pi**: `qwen3-coder-7b` (Fast) $\to$ `deepseek-v4-flash` (Balanced) $\to$ `deepseek-r1` (Frontier)
+- **Codex**: `gpt-6-luna` (Fast) $\to$ `gpt-6.1-sol` (Balanced) $\to$ `gpt-6-astra` (Frontier, `--reasoning-effort max`)
+- **Grok**: `grok-4-fast` (Fast) $\to$ `grok-4` (Balanced) $\to$ `grok-4.7` (Frontier)
+- **Oh My Pi**: `qwen3-coder-next` (Fast) $\to$ `deepseek-v4.1-flash` (Balanced) $\to$ `deepseek-r1` (Frontier)
+- **Pi**: `qwen3-coder-7b` (Fast) $\to$ `deepseek-v4.1-flash` (Balanced) $\to$ `deepseek-r1` (Frontier)
 - **Cursor**: `claude-haiku-5.5` (Fast) $\to$ `claude-sonnet-5.5` (Balanced) $\to$ `claude-opus-5.5` (Frontier)
+
 
 ### Legacy / V4 Profile (`--profile legacy`)
 - **Claude Code**: `claude-3-5-haiku` $\to$ `claude-3-5-sonnet` $\to$ `claude-opus-4.5`

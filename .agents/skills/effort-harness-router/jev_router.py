@@ -152,13 +152,14 @@ class OpenJevDiscriminator:
             r"\bqwen3-coder-7b\b", r"\bdeepseek-v4-flash\b"
         ],
         "codex": [
-            r"\bcodex\b", r"\bopenai\b", r"\bgpt-5.5\b", r"\bgpt-5.3-codex\b",
-            r"\bgpt-5.4-mini\b", r"\bgpt-5.4\b", r"\bgpt-5\b", r"\bo3-mini\b", r"\bo1\b"
+            r"\bcodex\b", r"\bopenai\b", r"\bgpt-6-astra\b", r"\bgpt-6.1-sol\b",
+            r"\bgpt-6-sol\b", r"\bgpt-6-luna\b", r"\bgpt-6\b", r"\bo3-mini\b", r"\bo1\b"
         ],
         "grok": [
             r"\bgrok\b", r"\bxai\b", r"\breal-time\b", r"\bgrok code\b",
-            r"\bgrok-4-fast\b", r"\bgrok-4-heavy\b", r"\bgrok-4\b", r"\bgrok-4.20\b"
+            r"\bgrok-4.7\b", r"\bgrok-4-fast\b", r"\bgrok-4\b", r"\bgrok-4.20\b"
         ],
+
 
         "cursor": [
             r"\bcursor\b", r"\bcomposer\b", r"\bcursorrules\b", r"\bdiff tab\b"
@@ -388,26 +389,26 @@ class ModelCatalog:
                 "cmd_template": "agy --model {model} --effort {effort}"
             },
             "codex": {
-                "fast": "gpt-5.4-mini",
-                "balanced": "gpt-5.3-codex",
-                "frontier": "gpt-5.5",
-                "cmd_template": "codex --model {model} --effort {effort}"
+                "fast": "gpt-6-luna",
+                "balanced": "gpt-6.1-sol",
+                "frontier": "gpt-6-astra",
+                "cmd_template": "codex --model {model} --reasoning-effort {effort}"
             },
             "grok": {
                 "fast": "grok-4-fast",
                 "balanced": "grok-4",
-                "frontier": "grok-4-heavy",
+                "frontier": "grok-4.7",
                 "cmd_template": "grok --model {model}"
             },
             "oh_my_pi": {
                 "fast": "qwen3-coder-next",
-                "balanced": "deepseek-v4",
+                "balanced": "deepseek-v4.1-flash",
                 "frontier": "deepseek-r1",
                 "cmd_template": "omp --role default={model} --role plan={model}"
             },
             "pi": {
                 "fast": "qwen3-coder-7b",
-                "balanced": "deepseek-v4-flash",
+                "balanced": "deepseek-v4.1-flash",
                 "frontier": "deepseek-r1",
                 "cmd_template": "pi --model {model}"
             },
@@ -453,7 +454,7 @@ class ModelCatalog:
                 "fast": "o3-mini",
                 "balanced": "gpt-4o",
                 "frontier": "o1",
-                "cmd_template": "codex --model {model} --effort {effort}"
+                "cmd_template": "codex --model {model} --reasoning-effort {effort}"
             },
             "grok": {
                 "fast": "grok-2",
@@ -498,6 +499,7 @@ class ModelCatalog:
                 "cmd_template": "cline --model {model}"
             }
         }
+
     }
 
 

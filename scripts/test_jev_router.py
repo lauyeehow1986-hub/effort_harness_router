@@ -167,10 +167,11 @@ class TestHarnessRouterAndCatalog(unittest.TestCase):
         # In high/max effort frontier tier:
         self.assertEqual(matrix["claude_code"]["model"], "claude-opus-5.5")
         self.assertIn(matrix["antigravity"]["model"], ["gemini-4-argon", "argon-4", "opus-5.5"])
-        self.assertEqual(matrix["codex"]["model"], "gpt-5.5")
-        self.assertEqual(matrix["grok"]["model"], "grok-4-heavy")
+        self.assertEqual(matrix["codex"]["model"], "gpt-6-astra")
+        self.assertEqual(matrix["grok"]["model"], "grok-4.7")
         self.assertIn("deepseek-r1", matrix["oh_my_pi"]["model"])
         self.assertEqual(matrix["cursor"]["model"], "claude-opus-5.5")
+
 
     def test_legacy_model_routing(self):
         rec = self.router.route(
