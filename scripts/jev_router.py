@@ -291,3 +291,232 @@ class OpenJevDiscriminator:
             large_context=NoulResult("large_context", large_context_prob)
         )
 
+
+def quantize_effort(score: float) -> Tuple[str, str]:
+    """Quantize continuous reasoning score [0.0, 1.0] to effort level and token estimate."""
+    if score < 0.20:
+        return "none", "0 tokens"
+    elif score < 0.45:
+        return "low", "1,024 - 2,048 tokens"
+    elif score < 0.70:
+        return "medium", "4,096 - 8,192 tokens"
+    elif score < 0.90:
+        return "high", "16,384 - 32,768 tokens"
+    else:
+        return "max", "64,000+ tokens"
+
+
+@dataclass
+class RoutingRecommendation:
+    """Consolidated routing recommendation across all coding agent harnesses."""
+    decision: JevDecision
+    profile: str
+    tier: str  # fast, balanced, frontier
+    effort: str
+    token_budget: str
+    primary_harness: str
+    primary_model: str
+    primary_command: str
+    harness_matrix: Dict[str, Dict[str, str]]
+    commands: Dict[str, str]
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "decision": self.decision.to_dict(),
+            "profile": self.profile,
+            "tier": self.tier,
+            "effort": self.effort,
+            "token_budget": self.token_budget,
+            "primary_recommendation": {
+                "harness": self.primary_harness,
+                "model": self.primary_model,
+                "command": self.primary_command
+            },
+            "harness_matrix": self.harness_matrix,
+            "commands": self.commands
+        }
+
+
+class ModelCatalog:
+    """Dual-generation catalog of models across coding agent harnesses."""
+
+    CATALOG = {
+        "frontier": {
+            "claude_code": {
+                "fast": "claude-haiku-5.5",
+                "balanced": "claude-sonnet-5.5",
+                "frontier": "claude-opus-5.5",
+                "cmd_template": "claude --model {model} --effort {effort}"
+            },
+            "antigravity": {
+                "fast": "gemini-3.8-flash",
+                "balanced": "gemini-3.8-pro",
+                "frontier": "argon-4",
+                "cmd_template": "agy --model {model} --effort {effort}"
+            },
+            "codex": {
+                "fast": "o3-mini",
+                "balanced": "gpt-5",
+                "frontier": "o1",
+                "cmd_template": "codex --model {model} --effort {effort}"
+            },
+            "grok": {
+                "fast": "grok-3-mini",
+                "balanced": "grok-3",
+                "frontier": "grok-4",
+                "cmd_template": "grok --model {model}"
+            },
+            "oh_my_pi": {
+                "fast": "qwen-2.5-coder-32b",
+                "balanced": "deepseek-v3",
+                "frontier": "deepseek-r1",
+                "cmd_template": "omp --role default={model} --role plan={model}"
+            },
+            "pi": {
+                "fast": "qwen-2.5-coder-7b",
+                "balanced": "deepseek-v3",
+                "frontier": "deepseek-r1",
+                "cmd_template": "pi --model {model}"
+            },
+            "cursor": {
+                "fast": "claude-3-5-haiku",
+                "balanced": "claude-sonnet-5.5",
+                "frontier": "claude-opus-5.5",
+                "cmd_template": "cursor --model {model}"
+            },
+            "windsurf": {
+                "fast": "cascade-fast",
+                "balanced": "cascade-base",
+                "frontier": "cascade-deep",
+                "cmd_template": "windsurf --model {model}"
+            },
+            "aider": {
+                "fast": "haiku-5.5",
+                "balanced": "sonnet-5.5",
+                "frontier": "opus-5.5",
+                "cmd_template": "aider --model {model}"
+            },
+            "cline": {
+                "fast": "gemini-3.8-flash",
+                "balanced": "claude-sonnet-5.5",
+                "frontier": "claude-opus-5.5",
+                "cmd_template": "cline --model {model}"
+            }
+        },
+        "legacy": {
+            "claude_code": {
+                "fast": "claude-3-5-haiku",
+                "balanced": "claude-3-5-sonnet",
+                "frontier": "claude-opus-4.5",
+                "cmd_template": "claude --model {model}"
+            },
+            "antigravity": {
+                "fast": "gemini-1.5-flash",
+                "balanced": "gemini-1.5-pro",
+                "frontier": "gemini-2.0-flash",
+                "cmd_template": "agy --model {model}"
+            },
+            "codex": {
+                "fast": "gpt-4o-mini",
+                "balanced": "gpt-4o",
+                "frontier": "o1-preview",
+                "cmd_template": "codex --model {model}"
+            },
+            "grok": {
+                "fast": "grok-2-mini",
+                "balanced": "grok-2",
+                "frontier": "grok-2",
+                "cmd_template": "grok --model {model}"
+            },
+            "oh_my_pi": {
+                "fast": "deepseek-coder-v2",
+                "balanced": "claude-3-5-sonnet",
+                "frontier": "deepseek-coder-v2",
+                "cmd_template": "omp --role default={model}"
+            },
+            "pi": {
+                "fast": "claude-3-5-haiku",
+                "balanced": "claude-3-5-sonnet",
+                "frontier": "claude-3-5-sonnet",
+                "cmd_template": "pi --model {model}"
+            },
+            "cursor": {
+                "fast": "cursor-small",
+                "balanced": "gpt-4o",
+                "frontier": "claude-3-5-sonnet",
+                "cmd_template": "cursor --model {model}"
+            },
+            "windsurf": {
+                "fast": "swe-bench-lite",
+                "balanced": "cascade-base",
+                "frontier": "cascade-deep",
+                "cmd_template": "windsurf --model {model}"
+            },
+            "aider": {
+                "fast": "gpt-4o-mini",
+                "balanced": "gpt-4o",
+                "frontier": "claude-3-5-sonnet",
+                "cmd_template": "aider --model {model}"
+            },
+            "cline": {
+                "fast": "claude-3-5-haiku",
+                "balanced": "claude-3-5-sonnet",
+                "frontier": "claude-3-5-sonnet",
+                "cmd_template": "cline --model {model}"
+            }
+        }
+    }
+
+
+class HarnessRouter:
+    """Routes coding prompts to optimal harness, model, and reasoning effort."""
+
+    def __init__(self, discriminator: Optional[OpenJevDiscriminator] = None):
+        self.discriminator = discriminator or OpenJevDiscriminator()
+
+    def route(self, prompt: str, profile: str = "frontier") -> RoutingRecommendation:
+        """Evaluate prompt and synthesize full routing recommendation."""
+        decision = self.discriminator.evaluate(prompt)
+        effort, tokens = quantize_effort(decision.reasoning.raw_score)
+
+        # Map effort to tier
+        if effort in ["none", "low"]:
+            tier = "fast"
+        elif effort == "medium":
+            tier = "balanced"
+        else:
+            tier = "frontier"
+
+        catalog = ModelCatalog.CATALOG.get(profile, ModelCatalog.CATALOG["frontier"])
+        harness_matrix = {}
+        commands = {}
+
+        for h_name, h_info in catalog.items():
+            model = h_info.get(tier, h_info["balanced"])
+            harness_matrix[h_name] = {
+                "model": model,
+                "tier": tier,
+                "effort": effort,
+                "token_budget": tokens
+            }
+            cmd_template = h_info.get("cmd_template", "{model}")
+            commands[h_name] = cmd_template.format(model=model, effort=effort)
+
+        primary_harness = decision.harness.selected
+        primary_model = harness_matrix[primary_harness]["model"]
+        primary_cmd = commands[primary_harness]
+
+        return RoutingRecommendation(
+            decision=decision,
+            profile=profile,
+            tier=tier,
+            effort=effort,
+            token_budget=tokens,
+            primary_harness=primary_harness,
+            primary_model=primary_model,
+            primary_command=primary_cmd,
+            harness_matrix=harness_matrix,
+            commands=commands
+        )
+
+

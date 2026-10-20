@@ -8,7 +8,10 @@ import os
 # Ensure scripts directory is in path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from jev_router import ChoiceResult, ScoreResult, NoulResult, JevDecision, OpenJevDiscriminator
+from jev_router import (
+    ChoiceResult, ScoreResult, NoulResult, JevDecision,
+    OpenJevDiscriminator, HarnessRouter, ModelCatalog, quantize_effort
+)
 
 class TestOpenJevPrimitives(unittest.TestCase):
 
@@ -109,6 +112,81 @@ class TestOpenJevDiscriminator(unittest.TestCase):
         d_aider = self.discriminator.evaluate("git commit changes and pair program in terminal with architect and editor roles")
         self.assertEqual(d_aider.harness.selected, "aider")
 
+class TestHarnessRouterAndCatalog(unittest.TestCase):
+    def setUp(self):
+        self.router = HarnessRouter()
+
+    def test_quantize_effort_brackets(self):
+        effort, tokens = quantize_effort(0.10)
+        self.assertEqual(effort, "none")
+        self.assertIn("0", tokens)
+
+
+        effort, tokens = quantize_effort(0.35)
+        self.assertEqual(effort, "low")
+        self.assertIn("1,024", tokens)
+
+        effort, tokens = quantize_effort(0.60)
+        self.assertEqual(effort, "medium")
+        self.assertIn("4,096", tokens)
+
+        effort, tokens = quantize_effort(0.80)
+        self.assertEqual(effort, "high")
+        self.assertIn("16,384", tokens)
+
+        effort, tokens = quantize_effort(0.95)
+        self.assertEqual(effort, "max")
+        self.assertIn("64,000", tokens)
+
+    def test_frontier_model_routing_all_harnesses(self):
+        rec = self.router.route(
+            "design distributed Raft consensus state machine in Rust with formal invariant verification",
+            profile="frontier"
+        )
+        # Verify primary recommendation
+        self.assertIn(rec.effort, ["high", "max"])
+        self.assertEqual(rec.tier, "frontier")
+        
+        # Verify specific harness mappings in matrix
+        matrix = rec.harness_matrix
+        self.assertIn("claude_code", matrix)
+        self.assertIn("antigravity", matrix)
+        self.assertIn("codex", matrix)
+        self.assertIn("grok", matrix)
+        self.assertIn("oh_my_pi", matrix)
+        self.assertIn("pi", matrix)
+        self.assertIn("aider", matrix)
+        self.assertIn("cursor", matrix)
+        self.assertIn("windsurf", matrix)
+        self.assertIn("cline", matrix)
+
+        # In high/max effort frontier tier:
+        self.assertEqual(matrix["claude_code"]["model"], "claude-opus-5.5")
+        self.assertIn(matrix["antigravity"]["model"], ["argon-4", "opus-5.5"])
+        self.assertIn(matrix["codex"]["model"], ["o1", "codex-next"])
+        self.assertEqual(matrix["grok"]["model"], "grok-4")
+        self.assertIn("deepseek-r1", matrix["oh_my_pi"]["model"])
+
+    def test_legacy_model_routing(self):
+        rec = self.router.route(
+            "fix typo in documentation header",
+            profile="legacy"
+        )
+        self.assertEqual(rec.tier, "fast")
+        matrix = rec.harness_matrix
+        self.assertEqual(matrix["claude_code"]["model"], "claude-3-5-haiku")
+        self.assertIn("gemini-1.5-flash", matrix["antigravity"]["model"])
+        self.assertIn("gpt-4o-mini", matrix["codex"]["model"])
+
+    def test_cli_command_generation(self):
+        rec = self.router.route("implement user authentication with jwt and bcrypt in express")
+        cmds = rec.commands
+        self.assertIn("claude", cmds["claude_code"])
+        self.assertIn("agy", cmds["antigravity"])
+        self.assertIn("codex", cmds["codex"])
+        self.assertIn("omp", cmds["oh_my_pi"])
+
 if __name__ == "__main__":
+
 
     unittest.main()
