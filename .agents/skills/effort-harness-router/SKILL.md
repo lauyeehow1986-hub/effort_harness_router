@@ -52,7 +52,48 @@ python scripts/jev_router.py "fix spelling error in README.md" --json
 
 # Quick CLI command output only
 python scripts/jev_router.py "audit security vulnerabilities" --quiet
+
+# Run the 8-scenario interactive showcase
+python examples/demo_prompts.py
 ```
+
+---
+
+## Example Prompts & Agent Response Patterns
+
+When the user asks for routing advice, evaluate their prompt using OpenJev and present the recommendation structured by task complexity:
+
+### 1. Frontier Architectural Tasks
+* **User Input:** *"I need to build a distributed Raft consensus state machine in Rust with network partition recovery and formal invariant verification. What agent and model should I use?"*
+* **Router Recommendation:**
+  - **Selected Harness:** `antigravity` (or `claude_code` for terminal-first work)
+  - **Selected Model:** `gemini-4-argon` / `claude-opus-5.5` / `gpt-6-astra`
+  - **Effort:** `max` ($64,000+$ reasoning tokens)
+  - **Command:** `agy --model gemini-4-argon --effort max`
+
+### 2. Routine Feature Implementation
+* **User Input:** *"Implement a FastAPI authentication endpoint with JWT tokens, bcrypt password hashing, and input validation schemas."*
+* **Router Recommendation:**
+  - **Selected Harness:** `claude_code` / `cursor` / `antigravity`
+  - **Selected Model:** `claude-sonnet-5.5` / `gpt-6.1-sol` / `gemini-3.8-flash`
+  - **Effort:** `medium` ($4,096 - 8,192$ reasoning tokens)
+  - **Command:** `claude --model claude-sonnet-5.5 --effort medium`
+
+### 3. Trivial Syntax / Typo / Formatting
+* **User Input:** *"Fix 3 typos in CONTRIBUTING.md, format the markdown tables, and rename a variable."*
+* **Router Recommendation:**
+  - **Selected Harness:** `claude_code` / `pi`
+  - **Selected Model:** `claude-haiku-5.5` / `gpt-6-luna` / `gemini-3.8-flash`
+  - **Effort:** `none` ($0$ tokens $\to$ automatically clamped to `low` in CLI for always-on adaptive models)
+  - **Command:** `claude --model claude-haiku-5.5 --effort low`
+
+### 4. Specialized Tooling (LSP / Debugger)
+* **User Input:** *"Trace a memory leak in a C++ binary using GDB/DAP breakpoints and clangd LSP diagnostics."*
+* **Router Recommendation:**
+  - **Selected Harness:** `oh_my_pi` (leveraging native DAP debugger and LSP client)
+  - **Selected Model:** `deepseek-v4.1-flash` (or `deepseek-r1` for deep trace analysis)
+  - **Command:** `omp --role default=deepseek-v4.1-flash --role plan=deepseek-v4.1-flash`
+
 
 ---
 

@@ -60,6 +60,120 @@ print(f"Run Command:     {rec.primary_command}")
 
 ---
 
+## 💡 Example Prompts & How to Use the Skill
+
+You can use the router in two ways:
+1. **As a conversational routing skill inside your AI pair-programmer** (Antigravity, Claude Code, Codex, Oh My Pi, Pi).
+2. **As a direct terminal CLI / script** before launching an agent session.
+
+### 💬 Mode 1: Asking Your Agent (Conversational In-Chat Prompts)
+
+When the skill is loaded in Antigravity (`agy`), Claude Code (`claude`), Codex (`codex`), or Oh My Pi (`omp`), simply ask natural routing questions. Here are real-world prompt examples:
+
+#### Scenario A: Architecting a Distributed System
+> **User Prompt:**
+> *"I need to implement a distributed Raft consensus state machine in Rust with network partition recovery and formal invariant verification. Which harness and model should I use, and what thinking effort?"*
+> 
+> **Agent Decision & Response:**
+> ```text
+> [OpenJev Decision Summary]
+> Complexity:    FRONTIER_ARCHITECTURAL (score: 0.95)
+> Reasoning:     MAX (64,000+ tokens)
+> Top Harness:   ANTIGRAVITY -> gemini-4-argon (agy --model gemini-4-argon --effort max)
+> Cross-Harness Options:
+>   - Claude Code: claude --model claude-opus-5.5 --effort max
+>   - Codex:       codex --model gpt-6-astra --reasoning-effort max
+>   - Oh My Pi:    omp --role default=deepseek-r1 --role plan=deepseek-r1
+> ```
+
+#### Scenario B: Quick Syntax or Documentation Fix
+> **User Prompt:**
+> *"Route this task: 'Fix 3 typos in CONTRIBUTING.md and format markdown tables'. I want to minimize cost and latency."*
+> 
+> **Agent Decision & Response:**
+> ```text
+> [OpenJev Decision Summary]
+> Complexity:    TRIVIAL (score: 0.10)
+> Reasoning:     NONE (0 tokens -> clamped to 'low' for always-on adaptive models)
+> Top Harness:   CLAUDE_CODE -> claude-haiku-5.5 (claude --model claude-haiku-5.5 --effort low)
+> Cross-Harness Options:
+>   - Antigravity: agy --model gemini-3.8-flash --effort low
+>   - Codex:       codex --model gpt-6-luna --reasoning-effort low
+> ```
+
+#### Scenario C: Debugging with Breakpoints and LSP Diagnostics
+> **User Prompt:**
+> *"I'm debugging a multi-threaded memory leak in a C++ server using GDB/DAP breakpoints and clangd LSP diagnostics. What's the optimal setup?"*
+> 
+> **Agent Decision & Response:**
+> ```text
+> [OpenJev Decision Summary]
+> Complexity:    COMPLEX (score: 0.70)
+> Reasoning:     MEDIUM (4,096 - 8,192 tokens)
+> Top Harness:   OH_MY_PI -> deepseek-v4.1-flash (omp --role default=deepseek-v4.1-flash --role plan=deepseek-v4.1-flash)
+> Superpower:    Leverages Oh My Pi's native DAP debugger, LSP client, and Hashline edits.
+> ```
+
+#### Scenario D: Legacy / Budget API Routing
+> **User Prompt:**
+> *"I only have access to legacy 2024/2025 API models (like Sonnet 3.5, GPT-4o). Route this task under the legacy profile: 'Implement a Stripe billing webhook endpoint with idempotent database writes'."*
+> 
+> **Agent Decision & Response:**
+> ```text
+> [OpenJev Decision Summary] (Legacy Profile)
+> Complexity:    ROUTINE (score: 0.45)
+> Reasoning:     LOW (1,024 - 2,048 tokens)
+> Top Harness:   CLAUDE_CODE -> claude-3-5-haiku (or claude-3-5-sonnet)
+> Cross-Harness Options:
+>   - Antigravity: agy --model gemini-1.5-flash
+>   - Codex:       codex --model gpt-4o-mini
+> ```
+
+---
+
+### 💻 Mode 2: Terminal CLI Prompts & Piped Workflows
+
+#### 1. Evaluate Directly from the Command Line
+```bash
+# Complex state machine
+python scripts/jev_router.py "refactor WebSocket connection pool with redis pubsub and async lock contention"
+
+# Single harness filter (outputs recommendation specific to Claude Code)
+python scripts/jev_router.py "build user authentication microservice" --harness claude_code
+
+# Run the automated multi-scenario demonstration showcase
+python examples/demo_prompts.py
+```
+
+#### 2. Pipe Git Diffs or Issue Descriptions Directly into OpenJev
+```bash
+# Evaluate git uncommitted changes to decide model effort for reviewing the PR
+git diff | python scripts/jev_router.py --harness claude_code
+
+# Pipe GitHub issue description via gh CLI to decide model tier
+gh issue view 42 --json body -q .body | python scripts/jev_router.py --json
+```
+
+#### 3. Programmatic Subagent Dispatching in Automation Scripts
+```python
+import subprocess
+import json
+
+def get_routing(prompt: str) -> dict:
+    result = subprocess.run(
+        ["python", "scripts/jev_router.py", prompt, "--json"],
+        capture_output=True, text=True, check=True
+    )
+    return json.loads(result.stdout)
+
+decision = get_routing("optimize PostgreSQL spatial query indexing")
+print(f"Selected: {decision['primary_recommendation']['harness']} with {decision['primary_recommendation']['model']}")
+print(f"Effort:   {decision['effort']} ({decision['token_budget']})")
+```
+
+
+---
+
 ## 📊 Harness & Model Matrix
 
 | Harness | Command | Fast / Low Effort | Balanced / Med Effort | Frontier / High Effort | Legacy / V4 Equivalent |
