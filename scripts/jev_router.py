@@ -7,8 +7,12 @@ from dataclasses import dataclass, field, asdict
 from typing import Dict, List, Optional, Any, Tuple
 import math
 import re
+import json
+import sys
+import argparse
 
 @dataclass
+
 
 class ChoiceResult:
     """Jev Choice: Probability distribution and selected option over discrete choices."""
@@ -518,5 +522,99 @@ class HarnessRouter:
             harness_matrix=harness_matrix,
             commands=commands
         )
+
+
+def format_report(rec: RoutingRecommendation) -> str:
+    """Format recommendation as a rich terminal and markdown report."""
+    d = rec.decision
+    lines = [
+        "=" * 80,
+        " [OpenJev Decision Summary] ",
+        "=" * 80,
+        f"Prompt:        {d.prompt}",
+        f"Complexity:    {d.complexity.level.upper():<22} (score: {d.complexity.raw_score:.2f})",
+        f"Reasoning:     {d.reasoning.level.upper():<22} (score: {d.reasoning.raw_score:.2f} -> {rec.token_budget})",
+        f"Safety Flags:  Destructive: {str(d.destructive_risk.is_triggered):<5} | Deep Context: {str(d.large_context.is_triggered)}",
+        "",
+        "=" * 80,
+        f" [*] Primary Recommendation: {rec.primary_harness.upper()} ",
+        "=" * 80,
+        f"Harness:       {rec.primary_harness}",
+        f"Model:         {rec.primary_model}",
+        f"Effort:        {rec.effort} ({rec.token_budget})",
+        f"Run Command:   {rec.primary_command}",
+        "",
+        "=" * 80,
+        f" [Cross-Harness Matrix ({rec.profile.upper()} Profile)] ",
+        "=" * 80,
+        f"{'Harness':<14} | {'Tier':<8} | {'Recommended Model':<26} | {'Effort':<6} | {'CLI Invocation'}",
+        f"{'-'*14}-|-{'-'*8}-|-{'-'*26}-|-{'-'*6}-|-{'-'*35}"
+    ]
+
+    for h_name, h_data in rec.harness_matrix.items():
+        cmd = rec.commands.get(h_name, "")
+        marker = "*  " if h_name == rec.primary_harness else "   "
+        display_name = marker + h_name
+        lines.append(f"{display_name:<14} | {h_data['tier']:<8} | {h_data['model']:<26} | {h_data['effort']:<6} | {cmd}")
+
+    lines.append("=" * 80)
+    return "\n".join(lines)
+
+
+
+def main():
+    if hasattr(sys.stdout, "reconfigure"):
+        try:
+            sys.stdout.reconfigure(encoding="utf-8")
+        except Exception:
+            pass
+    parser = argparse.ArgumentParser(
+
+        description="OpenJev Effort & Coding Harness Router: Non-autoregressively routes prompts to optimal models and harnesses."
+    )
+    parser.add_argument("prompt", nargs="?", default="", help="Prompt or task description to evaluate.")
+    parser.add_argument("--prompt", dest="prompt_flag", help="Alternative way to provide prompt.")
+    parser.add_argument("--profile", choices=["frontier", "legacy"], default="frontier", help="Model generation profile (default: frontier).")
+    parser.add_argument("--harness", choices=OpenJevDiscriminator.HARNESS_OPTIONS, help="Filter recommendation to a specific harness.")
+    parser.add_argument("--json", action="store_true", help="Output full routing decision as JSON.")
+    parser.add_argument("--quiet", action="store_true", help="Output only the primary CLI command.")
+
+    args = parser.parse_args()
+    prompt_text = (args.prompt or args.prompt_flag or "").strip()
+
+    if not prompt_text:
+        # Check standard input if piped
+        if not sys.stdin.isatty():
+            prompt_text = sys.stdin.read().strip()
+
+    if not prompt_text:
+        parser.print_help()
+        sys.exit(1)
+
+    router = HarnessRouter()
+    rec = router.route(prompt_text, profile=args.profile)
+
+    if args.json:
+        print(json.dumps(rec.to_dict(), indent=2))
+    elif args.quiet:
+        if args.harness:
+            print(rec.commands.get(args.harness, rec.primary_command))
+        else:
+            print(rec.primary_command)
+    else:
+        if args.harness:
+            h_data = rec.harness_matrix.get(args.harness)
+            cmd = rec.commands.get(args.harness)
+            print(f"Harness:   {args.harness}")
+            print(f"Model:     {h_data['model']}")
+            print(f"Effort:    {h_data['effort']} ({h_data['token_budget']})")
+            print(f"Command:   {cmd}")
+        else:
+            print(format_report(rec))
+
+
+if __name__ == "__main__":
+    main()
+
 
 

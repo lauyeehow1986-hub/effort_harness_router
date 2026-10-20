@@ -186,7 +186,48 @@ class TestHarnessRouterAndCatalog(unittest.TestCase):
         self.assertIn("codex", cmds["codex"])
         self.assertIn("omp", cmds["oh_my_pi"])
 
+class TestCLIInterface(unittest.TestCase):
+    def test_cli_json_output(self):
+        import subprocess
+        import json
+        res = subprocess.run(
+            [sys.executable, os.path.join(os.path.dirname(__file__), "jev_router.py"), "fix typo in readme", "--json"],
+            capture_output=True,
+            text=True
+        )
+        self.assertEqual(res.returncode, 0)
+        data = json.loads(res.stdout)
+        self.assertEqual(data["tier"], "fast")
+        self.assertIn("primary_recommendation", data)
+        self.assertIn("harness_matrix", data)
+
+    def test_cli_legacy_profile(self):
+        import subprocess
+        import json
+        res = subprocess.run(
+            [sys.executable, os.path.join(os.path.dirname(__file__), "jev_router.py"), "fix typo in readme", "--profile", "legacy", "--json"],
+            capture_output=True,
+            text=True
+        )
+        self.assertEqual(res.returncode, 0)
+        data = json.loads(res.stdout)
+        self.assertEqual(data["profile"], "legacy")
+        self.assertEqual(data["harness_matrix"]["claude_code"]["model"], "claude-3-5-haiku")
+
+    def test_cli_formatted_table_output(self):
+        import subprocess
+        res = subprocess.run(
+            [sys.executable, os.path.join(os.path.dirname(__file__), "jev_router.py"), "design raft consensus in rust"],
+            capture_output=True,
+            text=True
+        )
+        self.assertEqual(res.returncode, 0)
+        self.assertIn("OpenJev Decision Summary", res.stdout)
+        self.assertIn("Primary Recommendation", res.stdout)
+        self.assertIn("Harness Matrix", res.stdout)
+
 if __name__ == "__main__":
+
 
 
     unittest.main()
