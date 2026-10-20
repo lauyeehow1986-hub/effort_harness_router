@@ -77,16 +77,16 @@ The router supports both **Frontier/Next-Gen** and **Legacy/V4** model profiles 
 | Coding Harness | Command / Tool | Lightweight / Fast (Low Effort) | Balanced / Flagship (Med Effort) | Frontier / Reasoning (High/Max Effort) | Legacy / V4 Equivalent |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Claude Code** | `claude` | `claude-haiku-5.5` | `claude-sonnet-5.5` | `claude-opus-5.5` | `claude-3-5-sonnet`, `claude-opus-4.5` |
-| **Antigravity** | `agy` | `gemini-3.8-flash` | `gemini-3.8-pro` | `argon-4` / `opus-5.5` | `gemini-1.5-pro`, `gemini-2.0-flash` |
-| **OpenAI Codex** | `codex` | `gpt-6-luna` | `gpt-6.1-sol` | `gpt-6-astra` | `o3-mini`, `gpt-4o`, `o1` |
-
-| **Grok Code** | `grok` | `grok-3-mini` | `grok-3` | `grok-4` / `grok-reasoning` | `grok-2`, `grok-2-mini` |
-| **Oh My Pi (OMP)** | `omp` | `qwen-2.5-coder-32b` | `deepseek-v3` / `sonnet-5.5` | `deepseek-r1` / `opus-5.5` | `claude-3-5-sonnet`, `deepseek-coder-v2` |
-| **Pi** | `pi` | `qwen-2.5-coder-7b` | `deepseek-v3` | `deepseek-r1` | `claude-3-5-haiku` |
-| **Cursor** | `cursor` | `claude-3-5-haiku` | `claude-sonnet-5.5` / `gpt-5` | `claude-opus-5.5` / `o1` | `cursor-small`, `gpt-4o` |
-| **Windsurf** | `windsurf` | `cascade-fast` | `cascade-base` (`sonnet-5.5`)| `cascade-deep` (`opus-5.5` / `o3`)| `swe-bench-lite` |
-| **Aider** | `aider` | `--model haiku-5.5` | `--model sonnet-5.5` | `--architect opus-5.5 --editor sonnet-5.5` | `--model gpt-4o` |
+| **Antigravity** | `agy` | `gemini-3.8-flash` | `gemini-3.8-flash` (high) | `gemini-4-argon` / `opus-5.5` | `gemini-1.5-pro`, `gemini-2.0-flash` |
+| **OpenAI Codex** | `codex` | `gpt-5.4-mini` | `gpt-5.3-codex` | `gpt-5.5` (`--effort xhigh`) | `gpt-4o`, `o1`, `o3-mini` |
+| **Grok Code** | `grok` | `grok-4-fast` | `grok-4` | `grok-4-heavy` | `grok-2`, `grok-3` |
+| **Oh My Pi (OMP)** | `omp` | `qwen3-coder-next` | `deepseek-v4` | `deepseek-r1` / `deepseek-v4-pro` | `qwen-2.5-coder-32b`, `deepseek-v3` |
+| **Pi** | `pi` | `qwen3-coder-7b` | `deepseek-v4-flash` | `deepseek-r1` | `qwen-2.5-coder-7b`, `claude-3-5-haiku` |
+| **Cursor** | `cursor` | `claude-haiku-5.5` | `claude-sonnet-5.5` | `claude-opus-5.5` | `cursor-small`, `gpt-4o` |
+| **Windsurf** | `windsurf` | `cascade-fast` | `cascade-base` | `cascade-deep` | `swe-bench-lite` |
+| **Aider** | `aider` | `haiku-5.5` | `sonnet-5.5` | `opus-5.5` | `gpt-4o` |
 | **Cline / Roo Code**| VS Code MCP | `gemini-3.8-flash` | `claude-sonnet-5.5` | `claude-opus-5.5` / `deepseek-r1` | `claude-3-5-sonnet` |
+
 
 ---
 

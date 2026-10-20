@@ -139,24 +139,27 @@ class OpenJevDiscriminator:
         "antigravity": [
             r"\bantigravity\b", r"\bagy\b", r"\bsubagent\b", r"\bartifact\b",
             r"\bpair-programming\b", r"\bpair programming\b", r"\bworkspace\b",
-            r"\bgenerative ui\b", r"\bdeepmind\b", r"\bcanvas\b", r"\bmulti-agent\b"
+            r"\bgenerative ui\b", r"\bdeepmind\b", r"\bcanvas\b", r"\bmulti-agent\b",
+            r"\bgemini-4-argon\b", r"\bargon-4\b", r"\bgemini-3.8-flash\b"
         ],
         "oh_my_pi": [
             r"\boh my pi\b", r"\bomp\b", r"\blsp\b", r"\bdap\b", r"\bdebugger\b",
-            r"\bhashline\b", r"\bbreakpoint\b", r"\blanguage server\b"
+            r"\bhashline\b", r"\bbreakpoint\b", r"\blanguage server\b",
+            r"\bqwen3-coder-next\b", r"\bdeepseek-v4\b"
         ],
         "pi": [
-            r"\bpi\b", r"\bmario zechner\b", r"\bminimal agent\b", r"\b4 tools\b"
+            r"\bpi\b", r"\bmario zechner\b", r"\bminimal agent\b", r"\b4 tools\b",
+            r"\bqwen3-coder-7b\b", r"\bdeepseek-v4-flash\b"
         ],
         "codex": [
-            r"\bcodex\b", r"\bopenai\b", r"\bgpt-6\b", r"\bastra\b", r"\bsol\b", r"\bluna\b",
-            r"\bgpt-6-astra\b", r"\bgpt-6-sol\b", r"\bgpt-6-luna\b", r"\bgpt-6.1-sol\b",
-            r"\bo3-mini\b", r"\bo1\b", r"\bgpt-4o\b"
+            r"\bcodex\b", r"\bopenai\b", r"\bgpt-5.5\b", r"\bgpt-5.3-codex\b",
+            r"\bgpt-5.4-mini\b", r"\bgpt-5.4\b", r"\bgpt-5\b", r"\bo3-mini\b", r"\bo1\b"
+        ],
+        "grok": [
+            r"\bgrok\b", r"\bxai\b", r"\breal-time\b", r"\bgrok code\b",
+            r"\bgrok-4-fast\b", r"\bgrok-4-heavy\b", r"\bgrok-4\b", r"\bgrok-4.20\b"
         ],
 
-        "grok": [
-            r"\bgrok\b", r"\bxai\b", r"\breal-time\b", r"\bgrok code\b", r"\bgrok 3\b"
-        ],
         "cursor": [
             r"\bcursor\b", r"\bcomposer\b", r"\bcursorrules\b", r"\bdiff tab\b"
         ],
@@ -243,8 +246,10 @@ class OpenJevDiscriminator:
             reasoning_level = "low"
         elif raw_reasoning < 0.70:
             reasoning_level = "medium"
-        elif raw_reasoning < 0.90:
+        elif raw_reasoning < 0.88:
             reasoning_level = "high"
+        elif raw_reasoning < 0.95:
+            reasoning_level = "xhigh"
         else:
             reasoning_level = "max"
 
@@ -253,11 +258,13 @@ class OpenJevDiscriminator:
             "low": round(max(0.01, 1.0 - abs(raw_reasoning - 0.32) * 3), 3),
             "medium": round(max(0.01, 1.0 - abs(raw_reasoning - 0.58) * 3), 3),
             "high": round(max(0.01, 1.0 - abs(raw_reasoning - 0.80) * 3), 3),
-            "max": round(max(0.01, (raw_reasoning - 0.80) * 4), 3) if raw_reasoning >= 0.80 else 0.01
+            "xhigh": round(max(0.01, 1.0 - abs(raw_reasoning - 0.91) * 3), 3) if raw_reasoning >= 0.75 else 0.01,
+            "max": round(max(0.01, (raw_reasoning - 0.85) * 4), 3) if raw_reasoning >= 0.85 else 0.01
         }
         # Normalize
         r_total = sum(reasoning_probs.values())
         reasoning_probs = {k: round(v / r_total, 4) for k, v in reasoning_probs.items()}
+
 
         # 3. Noul: Destructive Risk
         destructive_hits = sum(1 for pat in self.DESTRUCTIVE_ANCHORS if re.search(pat, text))
@@ -307,10 +314,29 @@ def quantize_effort(score: float) -> Tuple[str, str]:
         return "low", "1,024 - 2,048 tokens"
     elif score < 0.70:
         return "medium", "4,096 - 8,192 tokens"
-    elif score < 0.90:
+    elif score < 0.88:
         return "high", "16,384 - 32,768 tokens"
+    elif score < 0.95:
+        return "xhigh", "48,000 - 64,000 tokens"
     else:
         return "max", "64,000+ tokens"
+
+
+def resolve_cli_effort(model: str, effort: str) -> str:
+    """
+    Resolve and clamp CLI effort parameter based on model capabilities.
+    Always-on adaptive thinking models (Claude 5.5, Gemini 3.8/4) reject effort="none" (minimum is "low").
+    OpenAI GPT-5.5 supports xhigh effort for top-tier reasoning.
+    """
+    m = model.lower()
+    # Always-on adaptive thinking models cannot disable reasoning (minimum is low)
+    if effort == "none":
+        if any(tag in m for tag in ["5.5", "argon", "3.8"]):
+            return "low"
+    # OpenAI GPT-5.5 / GPT-5.3-Codex supports xhigh for top-tier reasoning
+    if "gpt-5.5" in m and effort in ["high", "max"]:
+        return "xhigh"
+    return effort
 
 
 @dataclass
@@ -357,37 +383,36 @@ class ModelCatalog:
             },
             "antigravity": {
                 "fast": "gemini-3.8-flash",
-                "balanced": "gemini-3.8-pro",
-                "frontier": "argon-4",
+                "balanced": "gemini-3.8-flash",
+                "frontier": "gemini-4-argon",
                 "cmd_template": "agy --model {model} --effort {effort}"
             },
             "codex": {
-                "fast": "gpt-6-luna",
-                "balanced": "gpt-6.1-sol",
-                "frontier": "gpt-6-astra",
-                "cmd_template": "codex --model {model} --reasoning-effort {effort}"
+                "fast": "gpt-5.4-mini",
+                "balanced": "gpt-5.3-codex",
+                "frontier": "gpt-5.5",
+                "cmd_template": "codex --model {model} --effort {effort}"
             },
-
             "grok": {
-                "fast": "grok-3-mini",
-                "balanced": "grok-3",
-                "frontier": "grok-4",
+                "fast": "grok-4-fast",
+                "balanced": "grok-4",
+                "frontier": "grok-4-heavy",
                 "cmd_template": "grok --model {model}"
             },
             "oh_my_pi": {
-                "fast": "qwen-2.5-coder-32b",
-                "balanced": "deepseek-v3",
+                "fast": "qwen3-coder-next",
+                "balanced": "deepseek-v4",
                 "frontier": "deepseek-r1",
                 "cmd_template": "omp --role default={model} --role plan={model}"
             },
             "pi": {
-                "fast": "qwen-2.5-coder-7b",
-                "balanced": "deepseek-v3",
+                "fast": "qwen3-coder-7b",
+                "balanced": "deepseek-v4-flash",
                 "frontier": "deepseek-r1",
                 "cmd_template": "pi --model {model}"
             },
             "cursor": {
-                "fast": "claude-3-5-haiku",
+                "fast": "claude-haiku-5.5",
                 "balanced": "claude-sonnet-5.5",
                 "frontier": "claude-opus-5.5",
                 "cmd_template": "cursor --model {model}"
@@ -428,24 +453,23 @@ class ModelCatalog:
                 "fast": "o3-mini",
                 "balanced": "gpt-4o",
                 "frontier": "o1",
-                "cmd_template": "codex --model {model} --reasoning-effort {effort}"
+                "cmd_template": "codex --model {model} --effort {effort}"
             },
-
             "grok": {
-                "fast": "grok-2-mini",
-                "balanced": "grok-2",
-                "frontier": "grok-2",
+                "fast": "grok-2",
+                "balanced": "grok-3",
+                "frontier": "grok-3",
                 "cmd_template": "grok --model {model}"
             },
             "oh_my_pi": {
-                "fast": "deepseek-coder-v2",
-                "balanced": "claude-3-5-sonnet",
-                "frontier": "deepseek-coder-v2",
+                "fast": "qwen-2.5-coder-32b",
+                "balanced": "deepseek-v3",
+                "frontier": "claude-3-5-sonnet",
                 "cmd_template": "omp --role default={model}"
             },
             "pi": {
-                "fast": "claude-3-5-haiku",
-                "balanced": "claude-3-5-sonnet",
+                "fast": "qwen-2.5-coder-7b",
+                "balanced": "claude-3-5-haiku",
                 "frontier": "claude-3-5-sonnet",
                 "cmd_template": "pi --model {model}"
             },
@@ -502,14 +526,16 @@ class HarnessRouter:
 
         for h_name, h_info in catalog.items():
             model = h_info.get(tier, h_info["balanced"])
+            cli_effort = resolve_cli_effort(model, effort)
             harness_matrix[h_name] = {
                 "model": model,
                 "tier": tier,
                 "effort": effort,
+                "cli_effort": cli_effort,
                 "token_budget": tokens
             }
             cmd_template = h_info.get("cmd_template", "{model}")
-            commands[h_name] = cmd_template.format(model=model, effort=effort)
+            commands[h_name] = cmd_template.format(model=model, effort=cli_effort)
 
         primary_harness = decision.harness.selected
         primary_model = harness_matrix[primary_harness]["model"]
@@ -527,6 +553,7 @@ class HarnessRouter:
             harness_matrix=harness_matrix,
             commands=commands
         )
+
 
 
 def format_report(rec: RoutingRecommendation) -> str:

@@ -100,15 +100,20 @@ The OpenJev router uses calibrated non-autoregressive decision heads:
 
 ### Frontier / Next-Gen Profile (`--profile frontier`)
 - **Claude Code**: `claude-haiku-5.5` (Fast) $\to$ `claude-sonnet-5.5` (Balanced) $\to$ `claude-opus-5.5` (Frontier)
-- **Antigravity**: `gemini-3.8-flash` (Fast) $\to$ `gemini-3.8-pro` (Balanced) $\to$ `argon-4` / `opus-5.5` (Frontier)
-- **Codex**: `gpt-6-luna` (Fast) $\to$ `gpt-6.1-sol` (Balanced) $\to$ `gpt-6-astra` (Frontier)
-- **Grok**: `grok-3-mini` (Fast) $\to$ `grok-3` (Balanced) $\to$ `grok-4` (Frontier)
-- **Oh My Pi**: `qwen-2.5-coder-32b` (Fast) $\to$ `deepseek-v3` (Balanced) $\to$ `deepseek-r1` (Frontier)
+- **Antigravity**: `gemini-3.8-flash` (Fast) $\to$ `gemini-3.8-flash` (Balanced/High) $\to$ `gemini-4-argon` / `opus-5.5` (Frontier)
+- **Codex**: `gpt-5.4-mini` (Fast) $\to$ `gpt-5.3-codex` (Balanced) $\to$ `gpt-5.5` (Frontier, `--effort xhigh`)
+- **Grok**: `grok-4-fast` (Fast) $\to$ `grok-4` (Balanced) $\to$ `grok-4-heavy` (Frontier)
+- **Oh My Pi**: `qwen3-coder-next` (Fast) $\to$ `deepseek-v4` (Balanced) $\to$ `deepseek-r1` / `deepseek-v4-pro` (Frontier)
+- **Pi**: `qwen3-coder-7b` (Fast) $\to$ `deepseek-v4-flash` (Balanced) $\to$ `deepseek-r1` (Frontier)
+- **Cursor**: `claude-haiku-5.5` (Fast) $\to$ `claude-sonnet-5.5` (Balanced) $\to$ `claude-opus-5.5` (Frontier)
 
 ### Legacy / V4 Profile (`--profile legacy`)
 - **Claude Code**: `claude-3-5-haiku` $\to$ `claude-3-5-sonnet` $\to$ `claude-opus-4.5`
 - **Antigravity**: `gemini-1.5-flash` $\to$ `gemini-1.5-pro` $\to$ `gemini-2.0-flash`
-- **Codex**: `o3-mini` $\to$ `gpt-4o` $\to$ `o1` (with `gpt-4.5-preview` / `gpt-4o-mini`)
-- **Grok**: `grok-2-mini` $\to$ `grok-2`
-- **Oh My Pi**: `deepseek-coder-v2` $\to$ `claude-3-5-sonnet`
+- **Codex**: `gpt-4o`, `o1`, `o3-mini`, `gpt-4o-mini`
+- **Grok**: `grok-2` $\to$ `grok-3`
+- **Oh My Pi**: `qwen-2.5-coder-32b` $\to$ `deepseek-v3` $\to$ `claude-3-5-sonnet`
+- **Pi**: `qwen-2.5-coder-7b` $\to$ `claude-3-5-haiku` $\to$ `claude-3-5-sonnet`
+- **Cursor**: `cursor-small` $\to$ `gpt-4o` $\to$ `claude-3-5-sonnet`
+
 

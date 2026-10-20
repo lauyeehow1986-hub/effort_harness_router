@@ -134,7 +134,11 @@ class TestHarnessRouterAndCatalog(unittest.TestCase):
         self.assertEqual(effort, "high")
         self.assertIn("16,384", tokens)
 
-        effort, tokens = quantize_effort(0.95)
+        effort, tokens = quantize_effort(0.90)
+        self.assertEqual(effort, "xhigh")
+        self.assertIn("48,000", tokens)
+
+        effort, tokens = quantize_effort(0.96)
         self.assertEqual(effort, "max")
         self.assertIn("64,000", tokens)
 
@@ -144,7 +148,7 @@ class TestHarnessRouterAndCatalog(unittest.TestCase):
             profile="frontier"
         )
         # Verify primary recommendation
-        self.assertIn(rec.effort, ["high", "max"])
+        self.assertIn(rec.effort, ["high", "xhigh", "max"])
         self.assertEqual(rec.tier, "frontier")
         
         # Verify specific harness mappings in matrix
@@ -162,10 +166,11 @@ class TestHarnessRouterAndCatalog(unittest.TestCase):
 
         # In high/max effort frontier tier:
         self.assertEqual(matrix["claude_code"]["model"], "claude-opus-5.5")
-        self.assertIn(matrix["antigravity"]["model"], ["argon-4", "opus-5.5"])
-        self.assertEqual(matrix["codex"]["model"], "gpt-6-astra")
-        self.assertEqual(matrix["grok"]["model"], "grok-4")
+        self.assertIn(matrix["antigravity"]["model"], ["gemini-4-argon", "argon-4", "opus-5.5"])
+        self.assertEqual(matrix["codex"]["model"], "gpt-5.5")
+        self.assertEqual(matrix["grok"]["model"], "grok-4-heavy")
         self.assertIn("deepseek-r1", matrix["oh_my_pi"]["model"])
+        self.assertEqual(matrix["cursor"]["model"], "claude-opus-5.5")
 
     def test_legacy_model_routing(self):
         rec = self.router.route(
@@ -176,7 +181,17 @@ class TestHarnessRouterAndCatalog(unittest.TestCase):
         matrix = rec.harness_matrix
         self.assertEqual(matrix["claude_code"]["model"], "claude-3-5-haiku")
         self.assertIn("gemini-1.5-flash", matrix["antigravity"]["model"])
-        self.assertEqual(matrix["codex"]["model"], "o3-mini")
+        self.assertIn(matrix["codex"]["model"], ["o3-mini", "gpt-4o-mini"])
+
+
+    def test_always_on_adaptive_thinking_effort_clamp(self):
+        rec = self.router.route("fix typo in readme.md header")
+        # Decision effort is none
+        self.assertEqual(rec.effort, "none")
+        # Always-on adaptive thinking models clamp to "low" in CLI
+        self.assertIn("--effort low", rec.commands["claude_code"])
+        self.assertIn("--effort low", rec.commands["antigravity"])
+
 
 
     def test_cli_command_generation(self):
